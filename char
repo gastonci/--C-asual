@@ -1,0 +1,594 @@
+/*#ifndef _GLIBCXX_IOSTREAM
+#include <bits/ios_base.h>
+#ifndef CHAR_M_ios
+#define CHAR_M_ios
+namespace std 
+{
+          static ios_base::Init __MUOinit;
+}
+#endif
+#endif*/ //old version
+
+#ifndef CHAR_M
+#define CHAR_M
+#include <string>
+#include <iostream>//not old version
+/*namespace std
+{
+          extern istream cin;
+          extern ostream cout;
+}*/  //old version
+
+void cccat(const char*& str,const char* source);
+char* chrtostr(char);
+int MUO_char_dtoi(double);
+bool MUO_char_from(const char* &str,const char* &from,bool &include_from_and_to,int &y);
+int MUO_char_to(const char* &str,const char* &from,const char* &to,bool &include_from_and_to,int &y);
+//FABU = functions add by users
+
+std::string itostr(int x)
+{
+    int y, i;
+    std::string res;
+    y = x;
+    for(i = 0; y > 10; i++)
+          y /= 10;
+    char buff[i];
+    sprintf(buff, "%i", x);
+    res = buff;
+    return res;
+}
+
+std::string dtostr(double x)//quedo para optimizar
+{
+            std::string res;
+            char buff[20] = { '\0' };
+            sprintf(buff,"%f",x);
+            res = buff;
+            int y = res.length();
+            y -= 1;
+            while(res[y] == '0')
+            {
+                         res.erase(y,1);
+                         --y;
+            }
+            y = (int)x;
+            if((double)y == x)
+                         res.erase(res.length()-1,1);
+            return res;
+}
+
+int strwrds(const char*str)
+{
+    bool hs_ctch_a_wrd = false; //has catch a word
+    int x, res; //catch a ride!!!!
+    short z = strlen(str);
+    for(x = 0, res = 0; x < z;x++, str++)
+    {
+          if(!hs_ctch_a_wrd)
+          {
+                            if(*str != ' ')
+                            {
+                                                  hs_ctch_a_wrd = true;
+                                                  ++res;
+                            }
+          }
+          else
+          {
+              if(*str == ' ')
+              {
+                                    hs_ctch_a_wrd = false;
+              }
+          }
+    }
+    return res;
+}
+
+const char* suckvoid(const char* str,int z = 0)
+{
+       int x = 0;
+       char* y = new char[strlen(str)];
+       while(*str == ' '){str++;}
+       if(z == 0)
+       {
+            while(*str != '\0')//por default quita los espacios antes de la primera palabra,quita los espacios despues de la ultima palabra y deja un solo espacio entre palabras.
+            {
+                 while(*str == ' ')
+                            str++;
+                 while((*str != '\0') && (*str != ' '))
+                 {
+                      y[x] = *str;
+                      str++;
+                      x++;
+                 }
+                 y[x] = *str;
+                 x++;
+            }
+            x -= 2;
+            y[x] = '\0';
+       }
+       else if(z == 1)//como el anterior pero deja todos los espacio entre palabras.
+       {
+            x = strlen(str);
+            x--;
+            while(str[x] == ' ')
+            {
+                 x--;
+            }
+            x++;
+            strncpy(y,str,x);
+            y[x] = '\0';
+       }
+       else if(z == 2)//devuelve la string sin los espacios antes de la primera palabra
+       {
+            return str;
+       }
+       else
+       {
+           std::cerr << "//////////////////////////////////////////////////////"
+                     << "\naphardsoft_masterlib_char::abort\n"
+                     << "error con el int de suckvoid(string&,int)\n"
+                     << "la opcion " << z << " no es una opción existente en suckvoid.\n"
+                     << "//////////////////////////////////////////////////////";
+           abort();
+       }
+       return y;
+}
+
+const char* chrbcle(const char* str, int x = 0, int size = -1)//devuelve desde 'x' hasta 'size'
+{
+      if(size == -1)
+              size = strlen(str);
+      char* res = new char[size - x];
+      int y = 0;
+      while(x < size)
+      {
+           res[y] = str[x];
+           x++;
+           y++;
+      }
+      res[y] = '\0';
+      return res;
+}
+
+const char* wrdbcle(const char* str,int erase_this_many_from_begining,int erase_this_many_from_end)//como chrbcle pero para palabras
+{
+      int x = 0;
+      while(x <= erase_this_many_from_begining)
+      {
+           while(*str == ' '){str++;}
+           if(x != erase_this_many_from_begining)
+                while(*str != ' '){str++;}
+           x++;
+      }
+      erase_this_many_from_begining = strlen(str);
+      x = 0;
+      while(x <= erase_this_many_from_end)
+      {
+           erase_this_many_from_begining--;
+           while(str[erase_this_many_from_begining] == ' '){erase_this_many_from_begining--;}
+           if(x != erase_this_many_from_end)
+                while(str[erase_this_many_from_begining] != ' '){erase_this_many_from_begining--;}
+           erase_this_many_from_begining++;
+           x++;
+      }
+      char* res = new char[erase_this_many_from_begining];
+      x = 0;
+      while(x < erase_this_many_from_begining)
+      {
+           res[x] = str[x];
+           x++;
+      }
+      res[x] = '\0';
+      return res;
+}
+
+const char* strbcle(const char* str, int x)//devuelve la palabra numero x //empieza desde cero
+{
+      int y = 0;
+      while(y <= x)
+      {
+           while(*str == ' '){str++;}
+           if(y != x)
+                while(*str != ' '){str++;}
+           else
+           {
+               int z = 0;
+               while(str[z] != ' '){z++;}
+               char* res = new char[z];
+               y = 0;
+               while(y < z)
+               {
+                    res[y] = str[y];
+                    y++;
+               }
+               res[y] = '\0';
+               return res;
+           }
+           y++;
+      }
+      return "\0";
+}
+
+std::string redo(std::string str,int n = 0,int p = -1)
+{
+       if(p == -1)
+       {
+            p = str.length();
+       }
+       std::string res(str,n,p);//seguro ya tiene inline metido en todas partes
+       return res;
+}
+
+char* chrtostr(char x)//solo una direccion de char, debido a que cada string nueva la aloca en la misma direccion de la memoria y cambiando la que este alli en otra direccion... que estupides
+{
+      std::string y;//los chars definitibamente no son inmortales
+      y[0] = x;//... pero en esta funcion "solo puede haber uno"
+      y[1] = (char)NULL;//siempre los hacen de mas de un caracter
+      return &y[0];//<-this "Mcloud"
+}
+
+inline char* itocc(int x,int y = 10)//no usar en librerias, los pointer son muy dinamicos
+{
+      char z[9];
+      itoa(x,z,y);
+      char* res = z;
+      return res;
+}
+
+const char* dtocc(double x,int point = 46)//y = point
+{
+            //std::cout << "numero arrojado por la funcion anterior " << x << std::endl;
+    if(x == 0)
+         return "0";
+    int z = (int)x;
+    int xyz;
+    bool fix = false;
+    std::string res = itostr(z);//coloca los numero antes del punto
+                //std::cout << "numero entero " << res << std::endl;
+    bool signo = true;
+    if(x < 0)
+         signo = false;
+    x -= z;
+    z = 0;
+    if(MUO_char_dtoi(x*10) == 0)
+                           fix = true;
+    while(x > 0)//transfiere los digitos, despues de la coma, a un int
+    {
+        z *= 10;
+        x *= 10;
+        xyz = MUO_char_dtoi(x);
+        z += xyz;
+        if(x < 9e-008)
+             x = 0;
+        else
+            x -= xyz;
+    }
+    if(z > 0)
+    {
+         res += (char)point;//coloca el punto
+             //std::cout << "numero con " << (char)point << "(" << point << ") " << res << std::endl;
+         if(fix)//fix arregla si el primer numero despues de la coma es un cero
+         {
+                res += "0";//agrega el cero que falta
+                z /= 10;//remuve el decimal donde debio haber estado el cero
+         }
+         res += itostr(z);//coloca los decimalas despues del punto
+             //std::cout << "numero a ser devuelto " << res << std::endl;
+    }
+    //system("PAUSE");
+    return res.c_str();
+}
+
+inline char* strtobuff(std::string str)//permite todo menos "buffs" (char arrays)
+{
+    char* res;
+    res = new char;
+    const char* x = str.c_str();
+    strcpy(res,x);
+    return res;
+}
+
+void cccat(const char*& str,const char* source)//source puede ser tanto "char*" como "const char*", incluso "buff" (char[])
+{
+   char* res;
+   res = new char;//shall never be new char[0]
+   strcpy(res,str);
+   strcat(res,source);
+   str = res;
+   return;
+}
+
+char* fromto(const char* str,const char* from,const char* to,bool include_from_and_to = true)
+{
+    int y;
+    if(!MUO_char_from(str,from,include_from_and_to,y)){return "\0";}
+    int x = MUO_char_to(str,from,to,include_from_and_to,y);
+    if(x == 0){return "\0";}
+    if(include_from_and_to){x += strlen(to);}
+    char* res = new char[x];
+    for(y = 0;y < x;y++){res[y] = str[y];}
+    res[y] = '\0';
+    return res;
+}
+
+const char* extfromto(std::string &str,const char* from,const char* to,bool include_from_and_to = true)
+{
+    const char* c_str = str.c_str();
+    int z;
+    if(!MUO_char_from(c_str,from,include_from_and_to,z)){return "\0";}
+    int x = MUO_char_to(c_str,from,to,include_from_and_to,z);
+    if(x == 0){return "\0";}
+    z = strlen(to);
+    if(include_from_and_to){x += z;}
+    char* res = new char[x];
+    int y = 0;
+    for(y = 0;y < x;y++){res[y] = str[y];}
+    res[y] = '\0';
+    if(!include_from_and_to){x += z;}
+    z = str.length();
+    z -= x;
+    char* buff = new char[z];
+    for(y = 0;y < z;x++,y++){buff[y] = str[x];}
+    buff[y] = '\0';
+    str = buff;
+    delete [] buff;
+    return res;
+}
+
+bool MUO_char_from(const char* &str,const char* &from,bool &include_from_and_to,int &y)
+{
+    int x = 0;
+    y = strlen(from);
+    while(*str != '\0')
+    {
+        while(str[x] == from[x])
+        {
+            x++;
+            if(y == x)
+            {
+                 if(include_from_and_to){return true;}
+                 else
+                 {
+                     x = 0;
+                     while(x < y)
+                     {
+                         str++;
+                         x++;
+                     }
+                     return true;
+                 }
+            }
+        }
+        str++;
+        x = 0;
+    }
+    return false;
+}
+
+int MUO_char_to(const char* &str,const char* &from,const char* &to,bool &inlcude_from_and_to,int &xyz)
+{
+    unsigned int x = 0;
+    if(inlcude_from_and_to){x = xyz;}
+    unsigned int y = x,z = 0;
+    while(str[y] != '\0')
+    {
+        while(str[x] == to[z])
+        {
+            x++;
+            z++;
+            if(to[z] == '\0'){return y;}
+        }
+        y++;
+        x = y;
+        z = 0;
+    }
+    return 0;
+}
+
+inline int MUO_char_dtoi(double x)
+{
+    int res = (int)x;
+    if( (x - res) > 0.9)
+            ++res;
+    return res;
+}
+
+//////////////////////////////FUNCTION CEMENTERY////////////////////////////////
+/*std::string suckvoid(std::string& str,int integrer = 0)
+{
+       int x, z;
+       std::string y, res, returnable;
+       returnable = str;
+       bool esp = false;
+       for(x = 0; x < str.length(); ++x)
+       {
+             y = str[x];
+             if(strcmp(y.c_str()," ") != 0)
+             {
+                                   for(x; x < str.length(); ++x)
+                                   {
+                                         res += str[x];
+                                   }
+             }
+       }
+       str = res;
+       for(x = 0, z = 0; x < str.length(); ++x)
+       {
+              y = str[x];
+              if(strcmp(y.c_str()," ") != 0)
+              {
+                                    z = x;
+              }
+       }
+       res = "";
+       for(x = 0; x <= z; ++x)
+       {
+             res += str[x];
+       }
+       str = res;
+       if(integrer == 0) //por default cambia el valor de la string intoducida y devuelve el nuevo valor, ademas deja un solo espacio entre palabras.
+       {
+                   res = "";
+                   for(x = 0; x < str.length(); ++x)
+                   {
+                         y = str[x];
+                         if(strcmp(y.c_str()," ") == 0)
+                         {
+                                               if(!esp)
+                                               {
+                                                       res += y;
+                                                       esp = true;
+                                               }
+                         }
+                         else
+                         {
+                             esp = false;
+                             res += y;
+                         }
+                   }
+                   str = res;
+                   return res;
+       }
+       else if(integrer == 1)//como el anterior pero tambien deja todos los espacio entre palabras.
+       {
+            return res;
+       }
+       else if(integrer == 2) //devuelve el nuevo valor de la string sin cambiar la string.
+       {
+            str = returnable;
+            return res;
+       }
+       else if(integrer == 3) //cambia el valor de la string intoducida y devulve el antiguo valor de la string.
+       {
+                   return returnable;
+       }
+       else
+       {
+           std::cout << "//////////////////////////////////////////////////////"
+                     << "\naphardsoft_masterlib_char::abort\n"
+                     << "error con el int de suckvoid(string&,int)\n"
+                     << "la opcion " << integrer << " no es una opción existente en suckvoid.\n"
+                     << "//////////////////////////////////////////////////////";
+           abort(); //salta un error jajajaja
+       }
+}*/
+/*int strwrds(std::string str)
+{
+    bool hs_ctch_a_wrd = false; //has catch a word
+    int x, res; //catch a ride!!!!
+    std::string y;
+    for(x = 0, res = 0; x < str.length(); x++)
+    {
+          y = str[x];
+          if(!hs_ctch_a_wrd)
+          {
+                            if(strcmp(y.c_str()," ") != 0)
+                            {
+                                                  hs_ctch_a_wrd = true;
+                                                  ++res;
+                            }
+          }
+          else
+          {
+              if(strcmp(y.c_str()," ") == 0)
+              {
+                                    hs_ctch_a_wrd = false;
+              }
+          }
+    }
+    return res;
+}*/
+/*int strmcmp(std::string bg_str,std::string b_cmp,int option = 0) //no se puede nombrar 2b_cmp fucking compilador
+{
+    std::string x;
+    int y, z, res;
+    if(bg_str.length() < b_cmp.length())
+    {
+              if(option == 0)
+              {
+                        return -2;
+              }
+              else
+              {
+                  x = bg_str;
+                  bg_str = b_cmp;
+                  b_cmp = x;
+                  x = "";
+              }
+    }
+    z = bg_str.length() - b_cmp.length();
+    for(y = 0, res = 0;y <= z;++y,++res)
+    {
+          for(z = y, x = "";z < (b_cmp.length() + y);++z)
+          {
+                x += bg_str[z];
+          }
+          if(strcmp(x.c_str(),b_cmp.c_str()) == 0)
+          {
+                                             return res;
+          }
+          z = bg_str.length() - b_cmp.length();
+    }
+    return -1;
+}*/
+/*int strmcmp(std::string str,std::string x)//compara si se encuentra la palabra x
+{
+     if(strwrds(str.c_str()) < strwrds(x.c_str()))
+     {
+                     return false;
+     }
+     int res = strwrds(str.c_str());
+     res -= strwrds(x.c_str());
+     int strayinprogram;
+     std::string z;
+     int y;
+     int xyz = strwrds(x.c_str());
+     for(y = 0; y <= res; ++y)//y <= res nunca un problema!!!
+     {
+           z = strbcle(str,y);
+           for(strayinprogram = (y + 1); strayinprogram < (xyz + y); ++strayinprogram)
+           {
+                              z += " ";
+                              z += strbcle(str,strayinprogram);
+           }
+           if(strcmp(z.c_str(),x.c_str()) == 0)
+           {
+                                          ++y;
+                                          return y;
+           }
+     }
+     return 0;
+}*/
+/*int frstmtch(std::string str,std::string b_cmp)
+{
+    int x, y = str.length() - b_cmp.length(), len = b_cmp.length();
+    std::string z;
+    for(x = 0; x <= y;++x,++len)
+    {
+          z = chrbcle(str.c_str(),x,len);
+          if(strcmp(b_cmp.c_str(),z.c_str()) == 0)
+          {
+                                             return ++x;
+          }
+    }
+    return 0;
+}*/
+/*int lstmtch(std::string str,std::string b_cmp)
+{
+    int x, y = str.length(),len = b_cmp.length();
+    y -= b_cmp.length();
+    int res = -2;
+    std::string z;
+    for(x = 0; x <= y; ++x,++len)
+    {
+          z = chrbcle(str.c_str(),x,len);
+          if(strcmp(b_cmp.c_str(),z.c_str()) == 0)
+          {
+                                             res = x;
+          }
+    }
+    ++res;
+    return res;
+}*/
+#endif
